@@ -1,9 +1,13 @@
 package pack;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 public class Chromosome {
 
 	private Gene[] genes;
 	private double fitness;
+	
 	
 	public void initializeChromosome(int numberOfGenes) {
 		genes = new Gene[numberOfGenes];
@@ -11,9 +15,11 @@ public class Chromosome {
 	}
 	
 	private void initializeGenes() {
-		for (Gene gene : this.genes) {
-			gene = new Gene();
+		for(int i = 0; i < genes.length; i++) {
+			this.genes[i] = new Gene(i);
 		}
+		Collections.shuffle(Arrays.asList(genes));
+		
 	}
 	
 	public void setFitness(double fitness) {
