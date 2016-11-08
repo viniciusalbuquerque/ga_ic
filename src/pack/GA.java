@@ -196,13 +196,13 @@ public class GA {
 		for(int i = 0; i < this.chromosomes.length; i++) {
 			chromosomes[i] = new Chromosome();
 			chromosomes[i].initializeChromosome(numberOfGenes);
-			for(int j = 0; j < chromosomes[i].getGenes().length; j++) {
-				System.out.print(String.valueOf(chromosomes[i].getGenes()[j].getValue()) + " ");
-			}
-			System.out.println();
+//			for(int j = 0; j < chromosomes[i].getGenes().length; j++) {
+//				System.out.print(String.valueOf(chromosomes[i].getGenes()[j].getValue()) + " ");
+//			}
+//			System.out.println();
 		}
 		
-		System.out.println();
+//		System.out.println();
 //		for (Chromosome chromosome : this.chromosomes) {
 //			chromosome = new Chromosome();
 //			chromosome.initializeChromosome(numberOfGenes);

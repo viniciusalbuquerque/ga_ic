@@ -1,9 +1,11 @@
 package pack;
 
+import java.util.Arrays;
+
 public class Main {
 
-	private static final int NumberOfChromosomes = 5;
-	private static final int NumberOfIterations = 10;
+	private static final int NumberOfChromosomes = 100;
+	private static final int NumberOfIterations = 1000;
 	
 	public static void main(String[] args) {
 
@@ -12,14 +14,23 @@ public class Main {
 		algGen.start(NumberOfIterations);
 
 		
-		for(int i = 0; i < algGen.getChromosomes().length; i++) {
-			Chromosome chr = algGen.getChromosomes()[i];
-			for(int j = 0; j < chr.getGenes().length; j++) {
-				Gene g = chr.getGenes()[j];
-				System.out.print(String.valueOf(g.getValue()) + " ");
-			}
-			System.out.println();
+		Chromosome[] chrs = algGen.getChromosomes();
+		Arrays.sort(chrs, new ChromosomeFitnessComparator());
+		
+		for(Gene gene : chrs[0].getGenes()) {
+			System.out.print(String.valueOf(gene.getValue()) + " ");
 		}
+		System.out.println();
+		System.out.println(FitnessEvaluation.checkRightness(chrs[0].getGenes()));
+		
+//		for(int i = 0; i < algGen.getChromosomes().length; i++) {
+//			Chromosome chr = algGen.getChromosomes()[i];
+//			for(int j = 0; j < chr.getGenes().length; j++) {
+//				Gene g = chr.getGenes()[j];
+//				System.out.print(String.valueOf(g.getValue()) + " ");
+//			}
+//			System.out.println();
+//		}
 		
 	}
 
