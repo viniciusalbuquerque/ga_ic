@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class Main {
 
 	private static final int NumberOfChromosomes = 100;
-	private static final int NumberOfIterations = 1000;
+	private static final int NumberOfIterations = 2000;
 	
 	public static void main(String[] args) {
 
@@ -21,6 +21,7 @@ public class Main {
 			System.out.print(String.valueOf(gene.getValue()) + " ");
 		}
 		System.out.println();
+		System.out.println(chrs[0].getFitness());
 		System.out.println(FitnessEvaluation.checkRightness(chrs[0].getGenes()));
 		
 //		for(int i = 0; i < algGen.getChromosomes().length; i++) {

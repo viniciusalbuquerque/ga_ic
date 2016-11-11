@@ -21,12 +21,31 @@ public class GA {
 		initializeChromosomes(numberOfChromosomes, numberOfGenes);
 	}
 	
+	private void printTest() {
+		Chromosome[] chrs2 = this.chromosomes.clone();
+		Arrays.sort(chrs2, new ChromosomeFitnessComparator());
+		for(Gene gene : chrs2[0].getGenes()) {
+			System.out.print(String.valueOf(gene.getValue()) + " ");
+		}
+		System.out.println();
+		System.out.println(chrs2[0].getFitness());
+		System.out.println(FitnessEvaluation.checkRightness(chrs2[0].getGenes()));
+		System.out.println();
+	}
+	
 	public void start(int numberOfIterations) {
+		
+		double factor = this.mutationValue/(numberOfIterations/10);
+		
 		for(int i = 0; i < numberOfIterations; i++) {
 			evaluateFitnesses();
+			if (i == 0) {
+				printTest();
+			}
 			Chromosome[] crossChromosomes = crossover();
 			mutate();
 			this.chromosomes = selectIndividuals(crossChromosomes);
+			this.mutationValue -= factor;
 		}
 		
 	}
@@ -34,7 +53,7 @@ public class GA {
 	private Chromosome[] selectIndividuals(Chromosome[] crossChros) {
 //		Chromosome[] selected = selectNBest(this.chromosomes.length);
 		List<Chromosome> chrs = new ArrayList<Chromosome>(Arrays.asList(this.chromosomes.clone()));
-		chrs.addAll(chrs);
+		chrs.addAll(Arrays.asList(crossChros));
 		Chromosome[] nBest = new Chromosome[chrs.size()];
 		chrs.toArray(nBest);
 		return selectNBest(nBest, this.chromosomes.length);
@@ -116,7 +135,7 @@ public class GA {
 		
 		Random random = new Random();
 		//Passar quantos "melhores" quer usar para o crossOver
-		Chromosome[] bestChromosomes = selectNBest(this.chromosomes,5); // valor fictício
+		Chromosome[] bestChromosomes = selectNBest(this.chromosomes,(int)(this.chromosomes.length*this.crossoverValue)); // valor fictício
 		for(int i = 0; i < bestChromosomes.length; i++) {
 			for(int j = 0; j < bestChromosomes.length; j++) {
 				if (i != j) {
