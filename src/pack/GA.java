@@ -15,14 +15,16 @@ public class GA {
 //	private List<Chromosome> chromosomes;
 	private Chromosome[] chromosomes;
 	
+	private Chromosome bestChromosome;
+	
 	public GA(int numberOfChromosomes, int numberOfGenes, double mutationValue, double crossoverValue) {
 		this.mutationValue = mutationValue;
 		this.crossoverValue = crossoverValue;
 		initializeChromosomes(numberOfChromosomes, numberOfGenes);
 	}
 	
-	private void printTest() {
-		Chromosome[] chrs2 = this.chromosomes.clone();
+	private void printTest(Chromosome[] chrs2) {
+//		Chromosome[] chrs2 = this.chromosomes.clone();
 		Arrays.sort(chrs2, new ChromosomeFitnessComparator());
 		for(Gene gene : chrs2[0].getGenes()) {
 			System.out.print(String.valueOf(gene.getValue()) + " ");
@@ -36,16 +38,71 @@ public class GA {
 	public void start(int numberOfIterations) {
 		
 		double factor = this.mutationValue/(numberOfIterations/10);
+		this.chromosomes = evaluateFitnesses(this.chromosomes);
+		
+		int numIterationsWithoutChanging = 0;
+		
+		double mutValue = this.mutationValue;
 		
 		for(int i = 0; i < numberOfIterations; i++) {
-			evaluateFitnesses();
-			if (i == 0) {
-				printTest();
-			}
+			
 			Chromosome[] crossChromosomes = crossover();
 			mutate();
+			crossChromosomes = evaluateFitnesses(crossChromosomes);
 			this.chromosomes = selectIndividuals(crossChromosomes);
-			this.mutationValue -= factor;
+			if(this.mutationValue > 0) {
+				this.mutationValue -= factor;	
+			}
+			
+			
+			Chromosome[] newc = this.chromosomes.clone();
+			Arrays.sort(newc, new ChromosomeFitnessComparator());
+			System.out.print(String.valueOf(i + 1) + ": ");
+			
+//			for(Gene gene : newc[0].getGenes()) {
+//				System.out.print(String.valueOf(gene.getValue()) + " ");
+//			}
+//			System.out.println("   " + String.valueOf(newc[0].getFitness()));
+			
+			
+			if (i == 0) {
+				this.bestChromosome = newc[0];
+			}
+			
+			if (newc[0].getFitness() == 0) break;
+			
+			if(newc[0].getFitness() < this.bestChromosome.getFitness()) {
+				this.bestChromosome = newc[0];	
+			} else {
+				numIterationsWithoutChanging++;
+			}
+			
+//			for(Gene gene : newc[0].getGenes()) {
+//				System.out.print(String.valueOf(gene.getValue()) + " ");
+//			}
+			System.out.println("   " + String.valueOf(bestChromosome.getFitness()));
+			
+//			for(Gene gene : this.chromosomes[0].getGenes()) {
+//				System.out.print(String.valueOf(gene.getValue()) + " ");
+//			}
+//			System.out.println("   " + String.valueOf(this.chromosomes[0].getFitness()));
+//			if (this.chromosomes[0].getFitness() == 0) break;
+			
+//			if (i == 0) {
+//				this.bestChromosome = this.chromosomes[0];
+//			}
+			
+//			if(this.chromosomes[0].getFitness() < this.bestChromosome.getFitness()) {
+//				this.bestChromosome = this.chromosomes[0];	
+//			} else {
+//				numIterationsWithoutChanging++;
+//			}
+			
+			if(numIterationsWithoutChanging == numberOfIterations/10) {
+				this.mutationValue = mutValue;
+				numIterationsWithoutChanging = 0;
+			}
+			
 		}
 		
 	}
@@ -100,15 +157,18 @@ public class GA {
 		return bitGenes;
 	}
 	
-	private Gene[] getValoredGenes(Gene[] bitGenes, int maxValueSize) {
+	private Gene[] getValoredGenes(Gene[] bitGenes, int maxValue, int maxValueSize) {
 		Gene[] valoredGenes = new Gene[bitGenes.length/maxValueSize];
 		int valoredGenesIndex = 0;
 		
 		String bitStr = "";
 		for(Gene bitGene : bitGenes) {
-			bitStr = String.valueOf(bitGene.getValue());
+			bitStr += String.valueOf(bitGene.getValue());
 			if(bitStr.length() == maxValueSize) {
 				valoredGenes[valoredGenesIndex] = new Gene(Integer.parseInt(bitStr, 2));
+				if (valoredGenes[valoredGenesIndex].getValue() > maxValue) {
+					valoredGenes[valoredGenesIndex].setValue(maxValue);
+				}
 				valoredGenesIndex++;
 				bitStr = "";
 			}
@@ -118,14 +178,18 @@ public class GA {
 	
 	private void mutate() {
 		int nMutations = (int)(this.chromosomes.length * mutationValue);
+//		for(int i = 0; i < this.chromosomes.length; i++) {
+//			Chromosome chromosome = this.chromosomes[i];
 		for(Chromosome chromosome : this.chromosomes) {
-			for(int i = 0; i < nMutations; i++) {
-				Gene[] genes = chromosome.getGenes();
-				int maxValueSize = Integer.toBinaryString(getMaxGeneValue(genes)).length();
+			Gene[] genes = chromosome.getGenes();
+			for(int j = 0; j < nMutations; j++) {
+				int maxValue = getMaxGeneValue(genes);
+				int maxValueSize = Integer.toBinaryString(maxValue).length();
 				Gene[] bitGenes = getBitGenes(genes, maxValueSize);
 				bitGenes = flipRandomly(bitGenes);
-				genes = getValoredGenes(bitGenes, maxValueSize);
+				genes = getValoredGenes(bitGenes, maxValue, maxValueSize);
 			}	
+			chromosome.setGenes(genes);
 		}
 	}
 	
@@ -203,11 +267,16 @@ public class GA {
 		return chrRandomed;
 	}
 	
-	private void evaluateFitnesses() {
-		for(Chromosome chr : this.chromosomes) {
-			double fit = FitnessEvaluation.evaluate(chr.getGenes());
-			chr.setFitness(fit);
+	private Chromosome[] evaluateFitnesses(Chromosome[] chros) {
+		for(int i = 0; i < chros.length; i++) {
+			double fit = FitnessEvaluation.evaluate(chros[i].getGenes());
+			chros[i].setFitness(fit);
 		}
+		return chros;
+//		for(Chromosome chr : this.chromosomes) {
+//			double fit = FitnessEvaluation.evaluate(chr.getGenes());
+//			chr.setFitness(fit);
+//		}
 	}
 	
 	private void initializeChromosomes(int numberOfChromosomes, int numberOfGenes) {
@@ -229,7 +298,7 @@ public class GA {
 	}
 
 	public Chromosome[] getChromosomes() {
-		return chromosomes;
+		return this.chromosomes;
 	}
 	
 }
