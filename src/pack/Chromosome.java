@@ -8,6 +8,12 @@ public class Chromosome {
 	private Gene[] genes;
 	private double fitness;
 	
+	public Chromosome() {}
+	
+	public Chromosome(Chromosome chromosome) {
+		this.genes = chromosome.genes;
+		this.fitness = chromosome.fitness;
+	}
 	
 	public void initializeChromosome(int numberOfGenes) {
 		genes = new Gene[numberOfGenes];

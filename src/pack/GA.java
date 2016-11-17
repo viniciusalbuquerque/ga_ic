@@ -23,18 +23,10 @@ public class GA {
 		initializeChromosomes(numberOfChromosomes, numberOfGenes);
 	}
 	
-	private void printTest(Chromosome[] chrs2) {
-//		Chromosome[] chrs2 = this.chromosomes.clone();
-		Arrays.sort(chrs2, new ChromosomeFitnessComparator());
-		for(Gene gene : chrs2[0].getGenes()) {
-			System.out.print(String.valueOf(gene.getValue()) + " ");
-		}
-		System.out.println();
-		System.out.println(chrs2[0].getFitness());
-		System.out.println(FitnessEvaluation.checkRightness(chrs2[0].getGenes()));
-		System.out.println();
-	}
-	
+	/**
+	 * Método responsável por gerenciar o algoritmo nas iterações.
+	 * @param numberOfIterations
+	 */
 	public void start(int numberOfIterations) {
 		
 		double factor = this.mutationValue/(numberOfIterations/10);
@@ -67,38 +59,23 @@ public class GA {
 			
 			if (i == 0) {
 				this.bestChromosome = newc[0];
+				System.out.println(this.bestChromosome.getFitness());
 			}
 			
-			if (newc[0].getFitness() == 0) break;
-			
 			if(newc[0].getFitness() < this.bestChromosome.getFitness()) {
-				this.bestChromosome = newc[0];	
+				System.out.println(this.bestChromosome.getFitness());
+				this.bestChromosome = new Chromosome(newc[0]);
+//				this.bestChromosome = newc[0];	
 			} else {
 				numIterationsWithoutChanging++;
 			}
 			
-//			for(Gene gene : newc[0].getGenes()) {
-//				System.out.print(String.valueOf(gene.getValue()) + " ");
-//			}
-			System.out.println("   " + String.valueOf(bestChromosome.getFitness()));
+			if (newc[0].getFitness() == 0) break;
 			
-//			for(Gene gene : this.chromosomes[0].getGenes()) {
-//				System.out.print(String.valueOf(gene.getValue()) + " ");
-//			}
-//			System.out.println("   " + String.valueOf(this.chromosomes[0].getFitness()));
-//			if (this.chromosomes[0].getFitness() == 0) break;
 			
-//			if (i == 0) {
-//				this.bestChromosome = this.chromosomes[0];
-//			}
-			
-//			if(this.chromosomes[0].getFitness() < this.bestChromosome.getFitness()) {
-//				this.bestChromosome = this.chromosomes[0];	
-//			} else {
-//				numIterationsWithoutChanging++;
-//			}
-			
+			//Tentando saltar pra outro espaço de busca quando a solução fica presa (não funciona direito ainda)
 			if(numIterationsWithoutChanging == numberOfIterations/10) {
+				mutValue /= 2;
 				this.mutationValue = mutValue;
 				numIterationsWithoutChanging = 0;
 			}
@@ -107,6 +84,11 @@ public class GA {
 		
 	}
 	
+	/**
+	 * Função responsável por selecionar os N melhores indivíduos no array passado como parâmetro.
+	 * @param crossChros
+	 * @return
+	 */
 	private Chromosome[] selectIndividuals(Chromosome[] crossChros) {
 //		Chromosome[] selected = selectNBest(this.chromosomes.length);
 		List<Chromosome> chrs = new ArrayList<Chromosome>(Arrays.asList(this.chromosomes.clone()));
@@ -116,6 +98,11 @@ public class GA {
 		return selectNBest(nBest, this.chromosomes.length);
 	}
 	
+	/**
+	 * Função responsável por retornar o valor inteiro máximo do gene.
+	 * @param genes
+	 * @return
+	 */
 	private int getMaxGeneValue(Gene[] genes) {
 		int maxValue = 0;
 		for(Gene gene : genes) {
@@ -126,6 +113,12 @@ public class GA {
 		return maxValue;
 	}
 	
+	/**
+	 * Função que iguala o número de bits para que a conversão seja possível.
+	 * @param bitStr
+	 * @param maxValueSize
+	 * @return
+	 */
 	private String addZerosToBitStr(String bitStr, int maxValueSize) {
 		while(bitStr.length() < maxValueSize) {
 			bitStr = "0"+bitStr;
@@ -133,6 +126,13 @@ public class GA {
 		return bitStr;
 	}
 	
+	
+	/**
+	 * Retorna um array de Genes em bits.
+	 * @param genes
+	 * @param maxValueSize
+	 * @return
+	 */
 	private Gene[] getBitGenes(Gene[] genes, int maxValueSize) {
 		Gene[] bitGenes = new Gene[genes.length*maxValueSize];
 		int indexBitGenes = 0;
@@ -146,6 +146,11 @@ public class GA {
 		return bitGenes;
 	}
 	
+	/**
+	 * Função responsável por fazer o flip dos bits randomicamente.
+	 * @param bitGenes
+	 * @return
+	 */
 	private Gene[] flipRandomly(Gene[] bitGenes) {
 		Random random = new Random();
 		int index = random.nextInt(bitGenes.length);
@@ -157,6 +162,13 @@ public class GA {
 		return bitGenes;
 	}
 	
+	/**
+	 * Responsável por converter o array de bits em números inteiros.
+	 * @param bitGenes
+	 * @param maxValue
+	 * @param maxValueSize
+	 * @return
+	 */
 	private Gene[] getValoredGenes(Gene[] bitGenes, int maxValue, int maxValueSize) {
 		Gene[] valoredGenes = new Gene[bitGenes.length/maxValueSize];
 		int valoredGenesIndex = 0;
@@ -176,6 +188,9 @@ public class GA {
 		return valoredGenes;
 	}
 	
+	/**
+	 * Mutação.
+	 */
 	private void mutate() {
 		int nMutations = (int)(this.chromosomes.length * mutationValue);
 //		for(int i = 0; i < this.chromosomes.length; i++) {
@@ -299,6 +314,10 @@ public class GA {
 
 	public Chromosome[] getChromosomes() {
 		return this.chromosomes;
+	}
+	
+	public Chromosome getBestChromosome() {
+		return this.bestChromosome;
 	}
 	
 }
