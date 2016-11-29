@@ -2,7 +2,7 @@ package pack;
 
 public class FitnessEvaluation {
 
-	public static Gene[] genes = {new Gene(8), new Gene(6), new Gene(1), new Gene(4), new Gene(0), new Gene(5), new Gene(7), new Gene(3), new Gene(2), new Gene(9) };
+	public static Gene[] genes = {new Gene(8), new Gene(6), new Gene(1), new Gene(4), new Gene(0), new Gene(5), new Gene(7), new Gene(3), new Gene(2), new Gene(9), new Gene(13), new Gene(12), new Gene(11), new Gene(10), new Gene(9), new Gene(13), new Gene(12), new Gene(11), new Gene(10), new Gene(8), new Gene(6), new Gene(1), new Gene(4), new Gene(0) };
 //	public static Gene[] genes = {new Gene(2), new Gene(0), new Gene(1)};
 	
 	public static double checkRightness(Gene[] resultGenes) {

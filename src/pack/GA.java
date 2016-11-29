@@ -39,7 +39,7 @@ public class GA {
 		for(int i = 0; i < numberOfIterations; i++) {
 			
 			Chromosome[] crossChromosomes = crossover();
-			mutate();
+			crossChromosomes = mutate(crossChromosomes);
 			crossChromosomes = evaluateFitnesses(crossChromosomes);
 			this.chromosomes = selectIndividuals(crossChromosomes);
 			if(this.mutationValue > 0) {
@@ -59,14 +59,15 @@ public class GA {
 			
 			if (i == 0) {
 				this.bestChromosome = newc[0];
-				System.out.println(this.bestChromosome.getFitness());
+//				System.out.println(this.bestChromosome.getFitness());
 			}
 			
 			if(newc[0].getFitness() < this.bestChromosome.getFitness()) {
-				System.out.println(this.bestChromosome.getFitness());
+//				System.out.println(this.bestChromosome.getFitness());
 				this.bestChromosome = new Chromosome(newc[0]);
 //				this.bestChromosome = newc[0];	
 			} else {
+//				System.out.println();
 				numIterationsWithoutChanging++;
 			}
 			
@@ -75,6 +76,7 @@ public class GA {
 			
 			//Tentando saltar pra outro espaço de busca quando a solução fica presa (não funciona direito ainda)
 			if(numIterationsWithoutChanging == numberOfIterations/10) {
+				this.chromosomes = selectNRandomly(crossChromosomes, this.chromosomes.length);
 				mutValue /= 2;
 				this.mutationValue = mutValue;
 				numIterationsWithoutChanging = 0;
@@ -191,21 +193,26 @@ public class GA {
 	/**
 	 * Mutação.
 	 */
-	private void mutate() {
-		int nMutations = (int)(this.chromosomes.length * mutationValue);
-//		for(int i = 0; i < this.chromosomes.length; i++) {
-//			Chromosome chromosome = this.chromosomes[i];
-		for(Chromosome chromosome : this.chromosomes) {
+	private Chromosome[] mutate(Chromosome[] chromosomes) {
+//		int nMutations = (int)(this.chromosomes.length * mutationValue);
+//		int nMutations = (int)(this.chromosomes[0].getGenes().length * mutationValue);
+		for(int i = 0; i < chromosomes.length; i++) {
+			Chromosome chromosome = chromosomes[i];
+//		for(Chromosome chromosome : this.chromosomes) {
 			Gene[] genes = chromosome.getGenes();
+			int maxValue = getMaxGeneValue(genes);
+			int maxValueSize = Integer.toBinaryString(maxValue).length();
+			int nMutations = (int) (maxValueSize * genes.length * mutationValue);
 			for(int j = 0; j < nMutations; j++) {
-				int maxValue = getMaxGeneValue(genes);
-				int maxValueSize = Integer.toBinaryString(maxValue).length();
+//				int maxValue = getMaxGeneValue(genes);
+//				int maxValueSize = Integer.toBinaryString(maxValue).length();
 				Gene[] bitGenes = getBitGenes(genes, maxValueSize);
 				bitGenes = flipRandomly(bitGenes);
 				genes = getValoredGenes(bitGenes, maxValue, maxValueSize);
 			}	
 			chromosome.setGenes(genes);
 		}
+		return chromosomes;
 	}
 	
 	//Método para escolha dos indivíduos para o crossOver a decidir;
