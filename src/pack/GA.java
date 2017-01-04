@@ -47,8 +47,8 @@ public class GA {
 			}
 			
 			
-			Chromosome[] newc = this.chromosomes.clone();
-			Arrays.sort(newc, new ChromosomeFitnessComparator());
+//			Chromosome[] newc = this.chromosomes.clone();
+//			Arrays.sort(newc, new ChromosomeFitnessComparator());
 			System.out.print(String.valueOf(i + 1) + ": ");
 			
 //			for(Gene gene : newc[0].getGenes()) {
@@ -58,20 +58,29 @@ public class GA {
 			
 			
 			if (i == 0) {
-				this.bestChromosome = newc[0];
+				this.bestChromosome = this.chromosomes[0];
 //				System.out.println(this.bestChromosome.getFitness());
 			}
 			
-			if(newc[0].getFitness() < this.bestChromosome.getFitness()) {
+			if(this.chromosomes[0].getFitness() < this.bestChromosome.getFitness()) {
 //				System.out.println(this.bestChromosome.getFitness());
-				this.bestChromosome = new Chromosome(newc[0]);
+				this.bestChromosome = new Chromosome(this.chromosomes[0]);
 //				this.bestChromosome = newc[0];	
 			} else {
 //				System.out.println();
 				numIterationsWithoutChanging++;
 			}
 			
-			if (newc[0].getFitness() == 0) break;
+			if (this.chromosomes[0].getFitness() == 0) {
+//				System.out.println();
+//				for(int count = 0; count < newc.length; count++) {
+//					for(int county = 0; county < newc[count].getGenes().length; county++) {
+//						System.out.print(String.valueOf(newc[count].getGenes()[county].getValue()) + " " + String.valueOf(this.chromosomes[count].getGenes()[county].getValue()) + " " );
+//					}
+//					System.out.println("");
+//				}
+				break;
+			}
 			
 			
 			//Tentando saltar pra outro espaço de busca quando a solução fica presa (não funciona direito ainda)
